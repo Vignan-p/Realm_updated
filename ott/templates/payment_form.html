@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F3F3F3;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 400px;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            animation: fade-in 0.5s ease-in-out, slide-in 0.5s ease-in-out;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateY(-20%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .container h1 {
+            text-align: center;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        input[type="text"]:focus {
+            border-color: orangered;
+        }
+
+        button[type="button"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #FF5733;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button[type="button"]:hover {
+            background-color: orangered;
+        }
+
+        #show-razorpay-button{
+            background-color: orangered;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Payment Form</h1>
+        <form id="payment-form" method="post" action="{% url 'payment_view' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="text" id="amount" name="amount" placeholder="Enter Amount" value="{{ request.GET.price }}" readonly>
+            </div>
+            <button type="submit" id="show-razorpay-button" class="btn" style="margin-left: 25%;">Pay with Razorpay</button>
+        </form>
+    </div>
+    <script>
+        const RAZORPAY_KEY_ID = 'rzp_test_XEr7rfHShylgSp';
+        let razorpayOptions = null;
+    
+        function showRazorpayOptions() {
+            const amount = parseFloat(document.getElementById('amount').value);
+    
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+    
+            razorpayOptions = {
+                key: RAZORPAY_KEY_ID,
+                amount: amount * 100, // Amount in paisa (100 paisa = 1 INR)
+                currency: 'INR',
+                name: 'Defenders',
+                description: 'Payment for your order',
+                image: 'https://your-website.com/logo.png', // Replace with your logo URL
+                handler: function (response) {
+                    // Extract the payment ID from the response
+                    const paymentId = response.razorpay_payment_id;
+    
+                    // You can handle the success response here
+                    // Send the payment ID to your server for further processing
+                    // You can make an AJAX request to your Django backend
+                    fetch('/your-server-endpoint/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token if needed
+                        },
+                        body: JSON.stringify({ payment_id: paymentId }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Handle the response from your server if needed
+                        displayMessage();
+                        // Delay the redirection to the payment success page for 10 seconds
+                        setTimeout(function () {
+                            window.location.href = '/payment-success';  // Replace with the actual URL for your success page
+                        }, 10000); // 10000 milliseconds = 10 seconds
+                    })
+                    .catch(error => {
+                        console.error('Error sending payment ID to server:', error);
+                    });
+                },
+                prefill: {
+                    name: 'John Doe', // Replace with customer name
+                    email: 'john@example.com', // Replace with customer email
+                    contact: '+1234567890' // Replace with customer contact number
+                }
+            };
+            
+            const razorpayInstance = new Razorpay(razorpayOptions);
+            razorpayInstance.open();
+        }
+    
+
+        function displayMessage() {
+            const messageContainer = document.createElement('div');
+            messageContainer.innerHTML = 'Please do not refresh the page or go back.';
+            messageContainer.style.backgroundColor = '#FF5733';
+            messageContainer.style.color = 'white';
+            messageContainer.style.padding = '10px';
+            messageContainer.style.textAlign = 'center';
+            messageContainer.style.borderRadius = '5px';
+            messageContainer.style.marginTop = '10px';
+
+            const container = document.querySelector('.container');
+            container.appendChild(messageContainer);
+        }
+
+
+        const showRazorpayButton = document.getElementById('show-razorpay-button');
+        showRazorpayButton.addEventListener('click', showRazorpayOptions);
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan 4</title>
+    <style>
+        body, h1, p {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Set a dark blue background */
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        /* Style the container */
+        .container {
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            color: #ff5733; /* ZEE5 Orange */
+        }
+        
+        /* Style the cards container */
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* Style the wide plan card */
+        .plan-card {
+            background-color: #333; /* Dark gray background color */
+            color: #fff;
+            width: 70%; /* Adjust the width as needed to take more than half of the page */
+            margin: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s; /* Add a smooth transition for the zoom effect */
+        }
+        
+        /* Card borders cut shape */
+        .plan-card::before,
+        .plan-card::after {
+            content: "";
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            border: 2px solid #ff5733; /* ZEE5 Orange */
+            z-index: 1;
+        }
+        
+        .plan-card::before {
+            left: -2px;
+            top: -2px;
+            border-right: none;
+            border-bottom: none;
+            transform: scaleY(0);
+        }
+        
+        .plan-card::after {
+            right: -2px;
+            bottom: -2px;
+            border-left: none;
+            border-top: none;
+            transform: scaleY(0);
+        }
+        
+        /* Card content */
+        .card-content {
+            margin-bottom: 20px;
+            /* Add your styles for card content here */
+        }
+        
+        /* Style the subscribe button */
+        .subscribe-button {
+            background-color: #ff5733; /* ZEE5 Orange */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .subscribe-button:hover {
+            background-color: green; /* Slightly darker orange on hover */
+        }
+        
+        /* Zoom-in effect on hover */
+        .plan-card:hover {
+            transform: scale(1.1);
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Plan 4</h1>
+        <div class="cards-container">
+            <!-- Plan 4 Card -->
+            <div class="plan-card">
+                <!-- Plan 4 content -->
+                <h2>Save 43%</h2>
+                <p>Telugu Annual Plan</p>
+                <p>Full HD (1080p) · Stereo · Telugu Movies & Web series · 1 Year</p>
+                <div class="plan-details">
+                    <p class="price">INR 399 / year</p>
+                    <br>
+                    <a href="{% url 'payment_form' %}?price=399"><button class="subscribe-button">Proceed to Payment</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    
+    </script>
+</body>
+</html>
